@@ -1,0 +1,17 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/simple_middleware
+    docker:
+      - image: circleci/ruby:2.5.1
+    steps:
+      - checkout
+      - restore_cache:
+          key: gemfile-{{ checksum "simple_middleware.gemspec" }}-{{ checksum "Gemfile" }}
+      - run: bundle install --path vendor/bundle
+      - save_cache:
+          key: gemfile-{{ checksum "simple_middleware.gemspec" }}-{{ checksum "Gemfile" }}
+          paths:
+            - "vendor/bundle"
+      - run: bundle exec rspec --format RspecJunitFormatter
+      - run: bundle exec rubocop
