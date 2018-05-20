@@ -21,5 +21,9 @@ module SimpleMiddleware
     private
 
     attr_reader :next_middleware
+
+    def render(status:, headers: [], body: nil)
+      [status, headers, body]
+    end
   end
 end

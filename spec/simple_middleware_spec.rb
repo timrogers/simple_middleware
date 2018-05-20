@@ -16,14 +16,16 @@ RSpec.describe SimpleMiddleware do
     let(:second_middleware) do
       Class.new(SimpleMiddleware::Middleware) do
         def call(state)
-          state[:foo]
+          render status: 200,
+                 headers: { "Content-Type" => "text/plain" },
+                 body: state[:foo]
         end
       end
     end
 
     let(:middlewares) { [first_middleware, second_middleware] }
 
-    it { is_expected.to eq(:bar) }
+    it { is_expected.to eq([200, { "Content-Type" => "text/plain" }, :bar]) }
 
     context "with an initial state supplied" do
       subject(:call) do
@@ -32,7 +34,7 @@ RSpec.describe SimpleMiddleware do
 
       let(:initial_state) { { bar: :baz } }
 
-      it { is_expected.to eq(:bar) }
+      it { is_expected.to eq([200, { "Content-Type" => "text/plain" }, :bar]) }
 
       it "doesn't mutate the initial state" do
         expect { call }.to_not(change { initial_state })
